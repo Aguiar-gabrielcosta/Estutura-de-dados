@@ -23,6 +23,27 @@ export class ListaEncadeada {
         this.count++
     }
 
+    insert(index=(this.count-1), element=undefined){ // Inserir elemento (ou nenhum um espaço undefined) no index definido (ou no último espaço)
+        const node = new Node(element)
+        if (index <= 0){ // Caso o index for 0 ou menor, adiciona um novo header
+            node.next = this.header
+            this.header = node
+            this.count++
+        } else if (index >= (this.count-1)){ // Caso o indes for o último elemento ou "maior", usa o método add
+            this.add(element)
+        } else { // Nos casos intermediários, faz o anterior a inserção referenciar ao novo nodo, e o nodo novo referênciar ao próximo
+            let previous = this.header
+            let current = previous.next
+            for (let cc = 1; cc < index; cc++) {
+                previous = previous.next
+                current = current.next
+            }
+            previous.next = node
+            node.next = current
+            this.count++
+        }
+    }
+
     get(index){
         if (index < 0 || index > (this.count-1)){ // Verificar se o index é válido
             console.error('Invalid index!');
@@ -47,8 +68,26 @@ export class ListaEncadeada {
         }
     }
 
-    remove(element){
-
+    remove(index){
+        if (index < 0 || index > (this.count-1)){ // Verificar se o index é válido
+            console.error('Invalid index!');
+        } else if (index === 0){ // Se a remoção é do cabeça, basta trocar o elemento cabeça para o próximo
+            let aux = this.header
+            this.header = aux.next
+            this.count--
+        } else { // No resto dos casos, o elemento anterior passa a referênciar o próximo
+            let previous = this.header
+            let current = this.header.next
+            for (let cc = 1; cc < index; cc++){
+                previous = previous.next
+                current = current.next
+            }
+            previous.next = current.next
+            if (index === (this.count-1)){ // Se o elemento removido era o tail, o tail passa a referenciar o anterior ao antigo tail
+                this.tail = previous
+            }
+            this.count--
+        }
     }
 
     isEmpty() { 
@@ -67,15 +106,15 @@ export class ListaEncadeada {
         if (this.count === 0){
             return false
         } else {
-            current = this.header;
-            while (current.next !== null) { // Navega pelos elementos da lista
-                if (current === element) { // Se o elemento atual for o elemento procurado, retorna true
+            let current = this.header;
+            while (current !== null) { // Navega pelos elementos da lista
+                if (current.element === element) { // Se o elemento atual for o elemento procurado, retorna true
                     return true
                 } else {
-                    current = currentLast.next
+                    current = current.next
                 }
-            return false
             }
+            return false
         }
     }
 
@@ -83,17 +122,17 @@ export class ListaEncadeada {
         if (this.count === 0){
             console.error(`Element is not in the list`);
         } else {
-            current = this.header;
-            currentIndex = 0
-            while (current.next !== null) { // Navega pelos elementos da lista
-                if (current === element) { // Se o elemento atual for o procurado, retornar o index
+            let current = this.header;
+            let currentIndex = 0
+            while (current !== null) { // Navega pelos elementos da lista
+                if (current.element === element) { // Se o elemento atual for o procurado, retornar o index
                     return currentIndex
                 } else { // Do contrário, passa para o próximo elemento e corrige o index
-                    current = currentLast.next
+                    current = current.next
                     currentIndex++
                 }
-            console.error(`Element is not in the list`);
             }
+            console.error(`Element is not in the list`);
         }
     }
 
